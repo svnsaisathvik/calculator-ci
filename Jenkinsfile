@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "your_dockerhub_username/your_roll_number"
+        DOCKER_IMAGE = "svnsaisathvik/imt2023001"
         TAG = "${env.BUILD_NUMBER}"
     }
 
