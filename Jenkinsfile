@@ -2,17 +2,18 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "svnsaisathvik/imt2023001"
+        DOCKER_IMAGE = "your_dockerhub_username/your_roll_number"
         TAG = "${env.BUILD_NUMBER}"
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 checkout([$class: 'GitSCM',
                     branches: [[name: '*/main']],
                     userRemoteConfigs: [[
-                        url: 'https://github.com/svnsaisathvik/SE-Assignment',
+                        url: 'https://github.com/svnsaisathvik/calculator-ci.git',
                         credentialsId: 'github-creds'
                     ]]
                 ])
@@ -21,13 +22,21 @@ pipeline {
 
         stage('Install') {
             steps {
-                sh 'pip install -r requirements.txt'
+                sh '''
+                    python3 -m venv venv
+                    . venv/bin/activate
+                    pip install --upgrade pip
+                    pip install -r requirements.txt
+                '''
             }
         }
 
         stage('Test') {
             steps {
-                sh 'pytest -q'
+                sh '''
+                    . venv/bin/activate
+                    pytest -q
+                '''
             }
         }
 
