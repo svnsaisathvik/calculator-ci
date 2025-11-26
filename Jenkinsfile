@@ -42,7 +42,15 @@ pipeline {
 
         stage('Build Docker') {
             steps {
-                sh "docker build -t ${DOCKER_IMAGE}:${TAG} ."
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+
+                    sh '''
+                        echo "$PASS" | docker login -u "$USER" --password-stdin
+                        docker build -t ${DOCKER_IMAGE}:${TAG} .
+                        docker logout
+                    '''
+                }
             }
         }
 
@@ -50,6 +58,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds',
                     usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+
                     sh '''
                         echo "$PASS" | docker login -u "$USER" --password-stdin
                         docker push ${DOCKER_IMAGE}:${TAG}
